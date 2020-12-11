@@ -14,11 +14,10 @@ class CP56Time(Packet):
 	fields_desc = [ 
 			XShortField("Ms", 0xd504),
 			XByteField("Min", 0x1e),
-			XByteField("Hour", 0xa),
+			XByteField("Hour", 0x0a),
 			XByteField("Day", 0x13),
 			XByteField("Month", 0x02),
-			XByteField("Year", 0x5b),
-			]
+			XByteField("Year", 0x5b)]
 
 class asdu_infobj_45(Packet):
 	name = "C_SC_NA_1"
@@ -70,21 +69,21 @@ class asdu_infobj_58(Packet):
 	fields_desc = [ 
 			X3BytesField  ("IOA", 0x23),
 			XByteField("SCO", 0x80),
-			PacketField("CP56Time", CP56Time, Packet)]
+			PacketField("CP56Time", CP56Time(), Packet)]
 
 class asdu_infobj_59(Packet):
 	name = "C_DC_TA_1"
 	fields_desc = [ 
 			X3BytesField  ("IOA", 0x23),
 			XByteField("DCO", 0x80),
-			PacketField("CP56Time", CP56Time, Packet)]
+			PacketField("CP56Time", CP56Time(), Packet)]
 
 class asdu_infobj_60(Packet):
 	name = "C_RC_TA_1"
 	fields_desc = [ 
 			X3BytesField  ("IOA", 0x23),
 			XByteField("RCO", 0x80),
-			PacketField("CP56Time", CP56Time, Packet)]
+			PacketField("CP56Time", CP56Time(), Packet)]
 
 class asdu_infobj_61(Packet):
 	name = "C_SE_TA_1"
@@ -92,7 +91,7 @@ class asdu_infobj_61(Packet):
 			X3BytesField  ("IOA", 0x23),
 			StrField("Value", '', fmt="H", remain=0),
 			XByteField("QOS", 0x80),
-			PacketField("CP56Time", CP56Time, Packet)]
+			PacketField("CP56Time", CP56Time(), Packet)]
 
 class asdu_infobj_62(Packet):
 	name = "C_SE_TB_1"
@@ -100,7 +99,7 @@ class asdu_infobj_62(Packet):
 			X3BytesField  ("IOA", 0x23),
 			StrField("Value", '', fmt="H", remain=0),
 			XByteField("QOS", 0x80),
-			PacketField("CP56Time", CP56Time, Packet)]
+			PacketField("CP56Time", CP56Time(), Packet)]
 
 class asdu_infobj_63(Packet):
 	name = "C_SE_TC_1"
@@ -108,14 +107,14 @@ class asdu_infobj_63(Packet):
 			X3BytesField  ("IOA", 0x23),
 			StrField("Value", '', fmt="f", remain=0),
 			XByteField("QOS", 0x80),
-			PacketField("CP56Time", CP56Time, Packet)]
+			PacketField("CP56Time", CP56Time(), Packet)]
 
 class asdu_infobj_64(Packet):
 	name = "C_BO_TA_1"
 	fields_desc = [ 
 			X3BytesField  ("IOA", 0x23),
 			StrField("Value", '', fmt="I", remain=0),
-			PacketField("CP56Time", CP56Time, Packet)]
+			PacketField("CP56Time", CP56Time(), Packet)]
 
 class asdu_infobj_101(Packet):
 	name = "C_CI_NA_1"
@@ -127,7 +126,7 @@ class asdu_infobj_103(Packet):
 	name = "C_CS_NA_1"
 	fields_desc = [ 
 			X3BytesField  ("IOA", 0x0),
-			PacketField("CP56Time", CP56Time, Packet)]
+			PacketField("CP56Time", CP56Time(), Packet)]
 
 # IEC104 apci
 class i_frame(Packet):
@@ -141,7 +140,9 @@ class i_frame(Packet):
 	def post_build(self, p, pay):
 		if self.ApduLen is None:
 			l = len(pay)+4
-			p = p[:1] + struct.pack("!B", l) + p[2:]
+			if l > 255:
+				l = 255
+			p = p[:1] + struct.pack("!B", l) + p[2:l]
 		return p+pay
 
 

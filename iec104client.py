@@ -13,8 +13,8 @@ class iec104_tcp_client():
 	def connect(self):
 		self._socket=socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
 		self._socket.settimeout(0.5)
-		l_onoff=1          
-	    	l_linger = 0	
+		l_onoff=1
+		l_linger = 0
 		self._socket.setsockopt(socket.SOL_SOCKET,socket.SO_LINGER,struct.pack('ii', l_onoff, l_linger))
 		self._socket.connect((self._targetip,self._port))
 
@@ -264,24 +264,22 @@ class iec104_tcp_client():
 				asdubody=self.buildinfobj101(Infobj)
 			elif(TypeID==103):
 				asdubody=self.buildinfobj103(Infobj)
-
 			else:
-				print 'ASDU_TypeID is not supported' 
+				print('ASDU_TypeID is not supported')
 
-			#print hexdump(iframe/asduhead/asdubody)
 			return iframe/asduhead/asdubody
 
 		else:
-			print 'wrong apci type'
+			print('wrong apci type')
 
 	def sendOne(self,p):
 		self.connect()
 		iec104=self.buildpacket(p)
-		self._socket.send(str(iec104))
+		self._socket.send(bytes(iec104))
 		time.sleep(0.015)
 		try:
 			output=self._socket.recv(1024)
-		except Exception,e:
+		except Exception(e):
 			if (str(e).find('[Errno 104]')!=-1):
 				#self._socket.close()
 				return 'RST'
