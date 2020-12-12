@@ -1,6 +1,7 @@
 # Echo server program
 import socket
 import struct
+import binascii
 
 HOST = ''
 PORT = 2404
@@ -11,19 +12,20 @@ s.setsockopt(socket.SOL_SOCKET,socket.SO_LINGER,struct.pack('ii', l_onoff, l_lin
 #s.settimeout(1)
 s.bind((HOST, PORT))
 s.listen(10)
-print 'listening on port 2404'
+print('listening on port 2404')
 
 while True:
     conn, addr = s.accept()
     conn.settimeout(0.5)
-    print 'New connection from %s:%d' % (addr[0], addr[1])
+    print('New connection from %s:%d' % (addr[0], addr[1]))
     data=''
     try:
         data = conn.recv(1024)
-    except Exception,e:
-        print 'no data'
+    except Exception(e):
+        print('no data')
     if data=='':
-        print 'no data do nothing'
+        print('no data do nothing')
     else:
         #conn.close()
+        print(binascii.hexlify(data))
         conn.sendall(data)
